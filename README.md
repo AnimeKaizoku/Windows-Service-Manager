@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" alt="Kaizoku Service Manager" width="128"/>
+
 # Kaizoku Service Manager
 
 **A modern Windows service manager that does what `services.msc` won't: group and filter services by the account they run under, and save your own custom views.**

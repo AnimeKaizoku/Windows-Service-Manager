@@ -9,7 +9,7 @@
 [![Release](https://img.shields.io/github/v/release/AnimeKaizoku/Windows-Service-Manager?sort=semver)](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases)
 [![Build](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml/badge.svg)](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6?logo=windows)](#)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20%26%20Server-0078D6?logo=windows)](#)
 [![Made with Go + Wails](https://img.shields.io/badge/built%20with-Go%20%2B%20Wails-00ADD8?logo=go)](https://wails.io)
 
 </div>
@@ -18,7 +18,7 @@
 
 ## Why
 
-The built-in Services console can't filter by logon account and can't save groupings. If you run a fleet of services under one or more dedicated accounts (bots, workers, game servers, app pools), you waste time scrolling and squinting. Kaizoku Service Manager fixes exactly that.
+Built for **Windows Server**, where a single box often runs dozens of services across several dedicated accounts (bots, workers, game servers, app pools, scheduled agents). The built-in Services console can't filter by logon account and can't save groupings, so you waste time scrolling and squinting. Kaizoku Service Manager fixes exactly that, and works just as well on Windows 10/11.
 
 ## Features
 

@@ -35,6 +35,20 @@ Built for **Windows Server**, where a single box often runs dozens of services a
 - **Export:** dump the current view to CSV or JSON.
 - **Native:** single signed-able `.exe`, runs elevated, talks directly to the Windows Service Control Manager (no `sc.exe`/`nssm` shelling).
 
+## Screenshots
+
+<div align="center">
+
+**All services, grouped and filterable by logon account**
+
+<img src="assets/screenshot-main.png" alt="Main view: all services with state, startup type, PID and account columns" width="900"/>
+
+**Build your own saved views by account substring or an explicit pick list**
+
+<img src="assets/screenshot-custom-view.png" alt="New view dialog: filter by logon account or pick specific services" width="640"/>
+
+</div>
+
 ## Install
 
 ### Download

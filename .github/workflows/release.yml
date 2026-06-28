@@ -36,6 +36,22 @@ jobs:
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
+      - name: Compute version
+        id: ver
+        shell: pwsh
+        run: |
+          $version = "0.1.$($env:GITHUB_RUN_NUMBER)"
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+
+      - name: Stamp version into wails.json
+        shell: pwsh
+        run: |
+          $json = Get-Content wails.json -Raw | ConvertFrom-Json
+          $json.info.productVersion = "${{ steps.ver.outputs.version }}"
+          $json | ConvertTo-Json -Depth 10 | Set-Content wails.json
+          Write-Host "productVersion set to ${{ steps.ver.outputs.version }}"
+
       - name: Build app + installer
         run: wails build -platform windows/amd64 -nsis -o KaizokuServiceManager.exe
 
@@ -46,14 +62,6 @@ jobs:
           if (-not $src) { throw "NSIS installer was not produced (check makensis)." }
           Copy-Item $src.FullName build/bin/KaizokuServiceManager-installer.exe -Force
           Write-Host "Staged installer from $($src.Name)"
-
-      - name: Compute version
-        id: ver
-        shell: pwsh
-        run: |
-          $version = "0.1.$($env:GITHUB_RUN_NUMBER)"
-          "version=$version" >> $env:GITHUB_OUTPUT
-          "tag=v$version" >> $env:GITHUB_OUTPUT
 
       - name: Publish release
         uses: softprops/action-gh-release@v2

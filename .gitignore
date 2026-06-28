@@ -22,3 +22,5 @@ frontend/package.json.md5
 *.swp
 .DS_Store
 Thumbs.db
+
+winget-out/

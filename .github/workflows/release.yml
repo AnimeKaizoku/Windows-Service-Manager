@@ -39,6 +39,14 @@ jobs:
       - name: Build app + installer
         run: wails build -platform windows/amd64 -nsis -o KaizokuServiceManager.exe
 
+      - name: Stage installer
+        shell: pwsh
+        run: |
+          $src = Get-ChildItem build/bin/*installer.exe | Select-Object -First 1
+          if (-not $src) { throw "NSIS installer was not produced (check makensis)." }
+          Copy-Item $src.FullName build/bin/KaizokuServiceManager-installer.exe -Force
+          Write-Host "Staged installer from $($src.Name)"
+
       - name: Compute version
         id: ver
         shell: pwsh
@@ -55,4 +63,4 @@ jobs:
           generate_release_notes: true
           files: |
             build/bin/KaizokuServiceManager.exe
-            build/bin/KaizokuServiceManager-amd64-installer.exe
+            build/bin/KaizokuServiceManager-installer.exe

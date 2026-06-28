@@ -3,6 +3,11 @@ name: Release
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'LICENSE'
+      - 'legacy/**'
   workflow_dispatch:
 
 permissions:

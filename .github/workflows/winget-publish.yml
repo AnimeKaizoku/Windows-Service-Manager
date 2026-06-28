@@ -1,17 +1,27 @@
 name: Publish to winget
 
-# Manually triggered: opens a pull request to microsoft/winget-pkgs for a
-# given release. Requires:
+# Submits / updates the package on microsoft/winget-pkgs.
+# Runs automatically after a successful "Release" run, and can also be
+# triggered manually for a specific tag.
+#
+# Requires:
 #   1. This repository to be PUBLIC (winget must fetch the installer URL).
 #   2. A repository secret WINGET_TOKEN: a GitHub Personal Access Token
 #      (classic, scope "public_repo") used to fork/PR microsoft/winget-pkgs.
+#
+# Note: the package must already exist in winget-pkgs (submit the first
+# version manually with `wingetcreate`); winget-releaser only adds new
+# versions to an existing package.
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to publish (e.g. v0.1.5). Leave blank for latest.'
+        description: 'Release tag to publish (e.g. v0.1.8). Leave blank for latest.'
         required: false
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -19,9 +29,13 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    env:
+      HAS_TOKEN: ${{ secrets.WINGET_TOKEN != '' }}
     steps:
       - name: Resolve release tag
         id: tag
+        if: ${{ env.HAS_TOKEN == 'true' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -40,6 +54,7 @@ jobs:
           printf 'version=%s\n' "${TAG#v}" >> "$GITHUB_OUTPUT"
 
       - name: Submit to winget-pkgs
+        if: ${{ env.HAS_TOKEN == 'true' }}
         uses: vedantmgoyal9/winget-releaser@4ffc7888bffd451b357355dc214d43bb9f23917e # v2
         with:
           identifier: AnimeKaizoku.KaizokuServiceManager

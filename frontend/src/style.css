@@ -161,6 +161,8 @@ body {
     border: 1px solid var(--surface1);
 }
 .btn.ghost:hover { background: var(--surface1); }
+.btn.icon-only { display: inline-flex; align-items: center; justify-content: center; padding: 7px 10px; }
+.btn.icon-only svg { display: block; }
 .divider { width: 1px; align-self: stretch; background: var(--surface1); margin: 2px 4px; }
 
 #view-header {

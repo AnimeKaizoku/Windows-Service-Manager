@@ -13,6 +13,9 @@ on:
         description: 'Release tag to publish (e.g. v0.1.5). Leave blank for latest.'
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -22,17 +25,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+          TAG_INPUT: ${{ github.event.inputs.tag }}
         run: |
-          TAG="${{ github.event.inputs.tag }}"
+          TAG="$TAG_INPUT"
           if [ -z "$TAG" ]; then
             TAG="$(gh release view --json tagName --jq .tagName)"
           fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
-          echo "Publishing $TAG (version ${TAG#v}) to winget"
+          # Defensive: only accept plausible version tags (vN...).
+          case "$TAG" in
+            v[0-9]*) : ;;
+            *) echo "Invalid tag: $TAG" >&2; exit 1 ;;
+          esac
+          printf 'tag=%s\n' "$TAG" >> "$GITHUB_OUTPUT"
+          printf 'version=%s\n' "${TAG#v}" >> "$GITHUB_OUTPUT"
 
       - name: Submit to winget-pkgs
-        uses: vedantmgoyal9/winget-releaser@v2
+        uses: vedantmgoyal9/winget-releaser@4ffc7888bffd451b357355dc214d43bb9f23917e # v2
         with:
           identifier: AnimeKaizoku.KaizokuServiceManager
           version: ${{ steps.tag.outputs.version }}

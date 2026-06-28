@@ -29,6 +29,10 @@ jobs:
       - name: Install NSIS
         run: choco install nsis -y --no-progress
 
+      - name: Add NSIS to PATH
+        shell: pwsh
+        run: Add-Content $env:GITHUB_PATH 'C:\Program Files (x86)\NSIS'
+
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 

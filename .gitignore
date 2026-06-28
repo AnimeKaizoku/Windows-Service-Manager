@@ -13,6 +13,9 @@ frontend/node_modules/
 node_modules/
 npm-debug.log*
 
+# Wails build artifacts
+frontend/package.json.md5
+
 # Editor / OS
 .vscode/
 .idea/

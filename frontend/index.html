@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Kaizoku Service Manager</title>
+</head>
+<body>
+    <div id="app">
+        <aside id="sidebar">
+            <div class="brand">
+                <div class="brand-mark">K</div>
+                <div class="brand-text">
+                    <span class="brand-title">Kaizoku</span>
+                    <span class="brand-sub">Service Manager</span>
+                </div>
+            </div>
+
+            <div class="side-section">
+                <div class="side-head">Views</div>
+                <nav id="builtin-views" class="side-list"></nav>
+            </div>
+
+            <div class="side-section">
+                <div class="side-head">
+                    <span>Custom Views</span>
+                    <button id="new-view-btn" class="icon-btn" title="New view">+</button>
+                </div>
+                <nav id="custom-views" class="side-list"></nav>
+            </div>
+
+            <div class="side-section grow">
+                <div class="side-head">Accounts</div>
+                <nav id="account-list" class="side-list scroll"></nav>
+            </div>
+        </aside>
+
+        <main id="main">
+            <header id="toolbar">
+                <div class="search-wrap">
+                    <input id="search" type="text" placeholder="Search services, accounts, PID…" autocomplete="off"/>
+                </div>
+                <div class="toolbar-actions">
+                    <button class="btn act-start" data-act="start">▶ Start</button>
+                    <button class="btn act-stop" data-act="stop">⏹ Stop</button>
+                    <button class="btn act-restart" data-act="restart">↻ Restart</button>
+                    <span class="divider"></span>
+                    <button class="btn ghost" data-startmode="auto">Auto</button>
+                    <button class="btn ghost" data-startmode="manual">Manual</button>
+                    <button class="btn ghost" data-startmode="disabled">Disabled</button>
+                    <span class="divider"></span>
+                    <button class="btn ghost" id="start-all-auto">Start all Auto</button>
+                    <button class="btn ghost" id="export-btn">Export ▾</button>
+                    <button class="btn ghost" id="refresh-btn" title="Refresh (F5)">⟳</button>
+                </div>
+            </header>
+
+            <div id="view-header">
+                <div>
+                    <h1 id="view-title">All Services</h1>
+                    <p id="view-meta"></p>
+                </div>
+                <div id="counts"></div>
+            </div>
+
+            <div id="table-wrap">
+                <table id="grid">
+                    <thead>
+                        <tr>
+                            <th class="col-check"><input type="checkbox" id="check-all"/></th>
+                            <th class="sortable" data-sort="displayName">Service</th>
+                            <th class="sortable col-state" data-sort="state">State</th>
+                            <th class="sortable col-start" data-sort="startType">Startup</th>
+                            <th class="sortable col-pid" data-sort="pid">PID</th>
+                            <th class="sortable col-acct" data-sort="account">Log On As</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+                <div id="empty" class="empty hidden">No services match this view.</div>
+            </div>
+
+            <footer id="statusbar">
+                <span id="status">Ready.</span>
+                <span id="selcount"></span>
+            </footer>
+        </main>
+    </div>
+
+    <div id="modal-root"></div>
+    <div id="toast-root"></div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

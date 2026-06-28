@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "kaizoku-service-manager",
+  "outputfilename": "KaizokuServiceManager",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "TsunayoshiSawada",
+    "email": "animekaizokux@gmail.com"
+  },
+  "info": {
+    "companyName": "AnimeKaizoku",
+    "productName": "Kaizoku Service Manager",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright © 2026 TsunayoshiSawada",
+    "comments": "Manage Windows services grouped by account and custom views."
+  }
+}

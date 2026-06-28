@@ -1,54 +1,76 @@
+<div align="center">
+
 # Kaizoku Service Manager
 
-A lightweight GUI for managing Windows services with the visibility `services.msc` never gave you — **filter and group services by the account they run under**, and build **custom views** that keep related services together.
+**A modern Windows service manager that does what `services.msc` won't — group and filter services by the account they run under, and save your own custom views.**
 
-> This repository contains the original PowerShell/WPF prototype. A rewritten **Go (Wails)** desktop app with a modern UI is in progress.
+[![Release](https://img.shields.io/github/v/release/AnimeKaizoku/Windows-Service-Manager?sort=semver)](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases)
+[![Build](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml/badge.svg)](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6?logo=windows)](#)
+[![Made with Go + Wails](https://img.shields.io/badge/built%20with-Go%20%2B%20Wails-00ADD8?logo=go)](https://wails.io)
+
+</div>
+
+---
 
 ## Why
 
-The built-in Services console can't filter by logon account or let you save your own groupings. If you run a fleet of services under a dedicated account (bots, workers, game servers, app pools), you end up scrolling and squinting. This tool fixes that.
+The built-in Services console can't filter by logon account and can't save groupings. If you run a fleet of services under one or more dedicated accounts — bots, workers, game servers, app pools — you waste time scrolling and squinting. Kaizoku Service Manager fixes exactly that.
 
 ## Features
 
-- **Filter by logon account** — show only the services that run under a chosen user/account.
-- **Live status counts** — running / stopped / total at a glance.
-- **Multi-select** — `Ctrl+Click` or `Shift+Click` to act on many services at once.
+- **Accounts sidebar** — every logon account on the machine, with live counts. Click to see only that account's services.
+- **Custom views** — save arbitrary groupings of services (by account substring, an explicit pick list, or both). Switch between them in one click.
+- **Live status** — running / stopped / total counts per view, with colour-coded state pills.
+- **Multi-select** — checkboxes, `Ctrl`/`Shift`-click ranges, `Ctrl`+`A`, header "select all".
 - **Quick actions** — Start, Stop, Restart selected services.
-- **Startup types** — set selected services to `Auto`, `Manual`, or `Disabled`.
-- **One-click start** — start every `Auto` service that's currently stopped.
+- **Startup types** — set selected services to Automatic, Manual, or Disabled.
+- **One-click Start all Auto** — start every stopped Automatic service in the current view.
+- **Favorites** — right-click any service to star it; the Favorites view collects them.
+- **Search** — instant filter across name, display name, account, state, startup type, and PID.
+- **Export** — dump the current view to CSV or JSON.
+- **Native** — single signed-able `.exe`, runs elevated, talks directly to the Windows Service Control Manager (no `sc.exe`/`nssm` shelling).
 
-## Requirements
+## Install
 
-- Windows 10/11
-- PowerShell 7+
-- Administrator rights (required to control services)
-- [NSSM](https://nssm.cc/) on `PATH` — only if you manage NSSM-wrapped services; standard services work without it.
+### Download
+Grab the latest `KaizokuServiceManager.exe` from the [Releases](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases) page and run it (it will prompt for administrator rights — required to control services).
 
-## Usage
+### winget
+> _Coming soon:_
+> ```powershell
+> winget install AnimeKaizoku.KaizokuServiceManager
+> ```
 
-```powershell
-# Run the GUI
-pwsh -File .\KaizokuServices.ps1
+## Build from source
+
+Requirements: [Go](https://go.dev) 1.23+, [Node](https://nodejs.org) 18+, and the [Wails CLI](https://wails.io).
+
+```bash
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+# live-reload dev
+wails dev
+
+# production build -> build/bin/KaizokuServiceManager.exe
+wails build
 ```
 
-By default the GUI lists **all** services. To scope it to a specific account, set the
-filter at the top of `KaizokuServices.ps1`:
+## Tech
 
-```powershell
-# Regex matched against each service's logon account (StartName).
-# Empty string ('') shows all services.
-$AccountFilter = 'MyServiceAccount'
-```
+| Layer    | Stack |
+|----------|-------|
+| Backend  | Go, `golang.org/x/sys/windows/svc/mgr` (direct SCM access) |
+| Shell    | [Wails v2](https://wails.io) + WebView2 |
+| Frontend | Vanilla JS + Vite, Catppuccin Mocha theme |
 
-## Roadmap
+Config (custom views, favorites) is stored at `%APPDATA%\KaizokuServiceManager\config.json`.
 
-- [ ] Go (Wails) desktop app with a modern UI
-- [ ] Custom saved views (arbitrary service groupings)
-- [ ] Account sidebar with per-account counts
-- [ ] Per-service log viewer
-- [ ] Export (CSV / JSON)
-- [ ] winget package
+## Legacy
+
+The original PowerShell/WPF prototype lives in [`legacy/`](legacy/KaizokuServices.ps1).
 
 ## License
 
-See [LICENSE](LICENSE).
+[MIT](LICENSE) © TsunayoshiSawada

@@ -3,6 +3,10 @@ import {
     ListServices, StartServices, StopServices, RestartServices,
     SetStartType, GetConfig, SaveConfig,
 } from '../wailsjs/go/main/App';
+import { BrowserOpenURL } from '../wailsjs/runtime/runtime';
+
+const VERSION = 'v0.1.0';
+const GITHUB_URL = 'https://github.com/AnimeKaizoku/Windows-Service-Manager';
 
 // ---------- state ----------
 const state = {
@@ -237,7 +241,7 @@ function renderTable() {
             </td>
             <td>${statePill(s)}</td>
             <td class="cell-start">${esc(s.startType)}</td>
-            <td class="cell-pid">${s.pid ? s.pid : '—'}</td>
+            <td class="cell-pid">${s.pid ? s.pid : '-'}</td>
             <td class="cell-acct" title="${esc(accountLabel(s.account))}">${esc(shortAccount(s.account))}</td>`;
 
         const cb = tr.querySelector('input');
@@ -321,7 +325,7 @@ async function runAction(label, fn) {
         const ok = results.filter((r) => r.ok).length;
         const fail = results.filter((r) => !r.ok);
         if (fail.length) {
-            toast(`${label}: ${ok} ok, ${fail.length} failed — ${esc(fail[0].error)}`, 'err');
+            toast(`${label}: ${ok} ok, ${fail.length} failed. ${esc(fail[0].error)}`, 'err');
             setStatus(`${label}: ${ok} succeeded, ${fail.length} failed.`, 'error');
         } else {
             toast(`${label} ${ok} service(s).`, 'ok');
@@ -553,6 +557,36 @@ function openViewModal(existing) {
     };
 }
 
+// ---------- about ----------
+function openAbout() {
+    const root = $('#modal-root');
+    root.innerHTML = `
+      <div class="modal-backdrop">
+        <div class="modal" style="width:440px;">
+          <div class="modal-head">About</div>
+          <div class="modal-body">
+            <div class="about-row">
+              <img class="about-logo" src="/logo.png" alt="Kaizoku"/>
+              <div>
+                <div style="font-size:17px;font-weight:700;">Kaizoku Service Manager</div>
+                <div style="color:var(--subtext0);margin-top:2px;">${VERSION}</div>
+                <div style="color:var(--overlay1);font-size:12px;margin-top:6px;">MIT License &copy; TsunayoshiSawada</div>
+              </div>
+            </div>
+            <p style="color:var(--subtext1);">Manage Windows services grouped by logon account and your own custom views.</p>
+          </div>
+          <div class="modal-foot">
+            <button class="btn ghost" id="a-close">Close</button>
+            <button class="btn" style="background:var(--mauve)" id="a-github">View on GitHub</button>
+          </div>
+        </div>
+      </div>`;
+    const close = () => { root.innerHTML = ''; };
+    $('#a-close').onclick = close;
+    $('.modal-backdrop').onclick = (e) => { if (e.target.classList.contains('modal-backdrop')) close(); };
+    $('#a-github').onclick = () => { BrowserOpenURL(GITHUB_URL); };
+}
+
 // ---------- misc ----------
 function selectView(v) {
     state.view = v;
@@ -584,6 +618,7 @@ async function persist() {
 function wire() {
     $('#refresh-btn').onclick = refresh;
     $('#new-view-btn').onclick = () => openViewModal(null);
+    $('#about-btn').onclick = openAbout;
     $('#start-all-auto').onclick = startAllAuto;
     $('#export-btn').onclick = exportData;
 

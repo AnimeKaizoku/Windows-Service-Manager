@@ -2,7 +2,7 @@
 
 # Kaizoku Service Manager
 
-**A modern Windows service manager that does what `services.msc` won't — group and filter services by the account they run under, and save your own custom views.**
+**A modern Windows service manager that does what `services.msc` won't: group and filter services by the account they run under, and save your own custom views.**
 
 [![Release](https://img.shields.io/github/v/release/AnimeKaizoku/Windows-Service-Manager?sort=semver)](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases)
 [![Build](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml/badge.svg)](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml)
@@ -16,26 +16,27 @@
 
 ## Why
 
-The built-in Services console can't filter by logon account and can't save groupings. If you run a fleet of services under one or more dedicated accounts — bots, workers, game servers, app pools — you waste time scrolling and squinting. Kaizoku Service Manager fixes exactly that.
+The built-in Services console can't filter by logon account and can't save groupings. If you run a fleet of services under one or more dedicated accounts (bots, workers, game servers, app pools), you waste time scrolling and squinting. Kaizoku Service Manager fixes exactly that.
 
 ## Features
 
-- **Accounts sidebar** — every logon account on the machine, with live counts. Click to see only that account's services.
-- **Custom views** — save arbitrary groupings of services (by account substring, an explicit pick list, or both). Switch between them in one click.
-- **Live status** — running / stopped / total counts per view, with colour-coded state pills.
-- **Multi-select** — checkboxes, `Ctrl`/`Shift`-click ranges, `Ctrl`+`A`, header "select all".
-- **Quick actions** — Start, Stop, Restart selected services.
-- **Startup types** — set selected services to Automatic, Manual, or Disabled.
-- **One-click Start all Auto** — start every stopped Automatic service in the current view.
-- **Favorites** — right-click any service to star it; the Favorites view collects them.
-- **Search** — instant filter across name, display name, account, state, startup type, and PID.
-- **Export** — dump the current view to CSV or JSON.
-- **Native** — single signed-able `.exe`, runs elevated, talks directly to the Windows Service Control Manager (no `sc.exe`/`nssm` shelling).
+- **Accounts sidebar:** every logon account on the machine, with live counts. Click to see only that account's services.
+- **Custom views:** save arbitrary groupings of services (by account substring, an explicit pick list, or both). Switch between them in one click.
+- **Live status:** running / stopped / total counts per view, with colour-coded state pills.
+- **Multi-select:** checkboxes, `Ctrl`/`Shift`-click ranges, `Ctrl`+`A`, header "select all".
+- **Quick actions:** Start, Stop, Restart selected services.
+- **Right-click menu:** services.msc-style context menu on any row.
+- **Startup types:** set selected services to Automatic, Manual, or Disabled.
+- **One-click Start all Auto:** start every stopped Automatic service in the current view.
+- **Favorites:** right-click any service to star it; the Favorites view collects them.
+- **Search:** instant filter across name, display name, account, state, startup type, and PID.
+- **Export:** dump the current view to CSV or JSON.
+- **Native:** single signed-able `.exe`, runs elevated, talks directly to the Windows Service Control Manager (no `sc.exe`/`nssm` shelling).
 
 ## Install
 
 ### Download
-Grab the latest `KaizokuServiceManager.exe` from the [Releases](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases) page and run it (it will prompt for administrator rights — required to control services).
+Grab the latest `KaizokuServiceManager.exe` from the [Releases](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases) page and run it. It will prompt for administrator rights, which are required to control services.
 
 ### winget
 > _Coming soon:_

@@ -26,26 +26,29 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install NSIS
+        run: choco install nsis -y --no-progress
+
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-      - name: Build
-        run: wails build -platform windows/amd64 -o KaizokuServiceManager.exe
+      - name: Build app + installer
+        run: wails build -platform windows/amd64 -nsis -o KaizokuServiceManager.exe
 
       - name: Compute version
         id: ver
         shell: pwsh
         run: |
-          $base = (Get-Content wails.json | ConvertFrom-Json).info.productVersion
-          if (-not $base) { $base = '0.1.0' }
-          $tag = "v$base+build.$($env:GITHUB_RUN_NUMBER)"
-          "tag=$tag" >> $env:GITHUB_OUTPUT
-          "release=Kaizoku Service Manager v$base (build $($env:GITHUB_RUN_NUMBER))" >> $env:GITHUB_OUTPUT
+          $version = "0.1.$($env:GITHUB_RUN_NUMBER)"
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
-          name: ${{ steps.ver.outputs.release }}
+          name: Kaizoku Service Manager v${{ steps.ver.outputs.version }}
           generate_release_notes: true
-          files: build/bin/KaizokuServiceManager.exe
+          files: |
+            build/bin/KaizokuServiceManager.exe
+            build/bin/KaizokuServiceManager-amd64-installer.exe

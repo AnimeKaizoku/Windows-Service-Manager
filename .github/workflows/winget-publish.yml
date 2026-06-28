@@ -1,0 +1,41 @@
+name: Publish to winget
+
+# Manually triggered: opens a pull request to microsoft/winget-pkgs for a
+# given release. Requires:
+#   1. This repository to be PUBLIC (winget must fetch the installer URL).
+#   2. A repository secret WINGET_TOKEN: a GitHub Personal Access Token
+#      (classic, scope "public_repo") used to fork/PR microsoft/winget-pkgs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v0.1.5). Leave blank for latest.'
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="$(gh release view --json tagName --jq .tagName)"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+          echo "Publishing $TAG (version ${TAG#v}) to winget"
+
+      - name: Submit to winget-pkgs
+        uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: AnimeKaizoku.KaizokuServiceManager
+          version: ${{ steps.tag.outputs.version }}
+          release-tag: ${{ steps.tag.outputs.tag }}
+          installers-regex: 'installer\.exe$'
+          token: ${{ secrets.WINGET_TOKEN }}

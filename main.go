@@ -25,6 +25,7 @@ func main() {
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 30, G: 30, B: 46, A: 1},
+		WindowStartState: options.Maximised,
 		OnStartup:        app.startup,
 		Windows: &windows.Options{
 			WebviewIsTransparent: false,

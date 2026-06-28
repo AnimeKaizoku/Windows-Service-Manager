@@ -271,6 +271,28 @@ input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--mauve); 
 .svc-picker label:last-child { border-bottom: none; }
 .svc-picker label:hover { background: var(--mantle); }
 
+/* ---------- Context menu ---------- */
+.ctx-menu {
+    position: fixed; z-index: 70; min-width: 196px;
+    background: var(--base); border: 1px solid var(--surface1);
+    border-radius: 10px; box-shadow: var(--shadow); padding: 6px;
+    font-size: 12.5px; animation: ctx-in 0.1s ease-out;
+}
+@keyframes ctx-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+.ctx-title {
+    padding: 4px 10px 7px; color: var(--overlay1); font-size: 11px;
+    font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;
+    border-bottom: 1px solid var(--surface0); margin-bottom: 4px;
+}
+.ctx-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; border-radius: 7px; cursor: pointer; color: var(--text);
+}
+.ctx-item:hover { background: var(--surface0); }
+.ctx-item .ico { width: 15px; text-align: center; color: var(--subtext0); }
+.ctx-item.danger:hover { background: rgba(243, 139, 168, 0.15); color: var(--red); }
+.ctx-sep { height: 1px; background: var(--surface0); margin: 5px 4px; }
+
 /* ---------- Toasts ---------- */
 #toast-root { position: fixed; bottom: 18px; right: 18px; display: flex; flex-direction: column; gap: 8px; z-index: 60; }
 .toast {

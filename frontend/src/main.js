@@ -50,6 +50,14 @@ function accountLabel(a) {
     return (a && a.trim()) ? a : 'LocalSystem';
 }
 
+// Friendly, shortened account for display: drops the domain/authority prefix
+// (e.g. "NT AUTHORITY\LocalService" -> "LocalService", ".\kaizoku" -> "kaizoku").
+function shortAccount(a) {
+    const full = accountLabel(a);
+    const i = full.lastIndexOf('\\');
+    return i >= 0 ? full.slice(i + 1) : full;
+}
+
 function accountCounts() {
     const map = new Map();
     for (const s of state.services) {
@@ -66,7 +74,7 @@ function currentView() {
     if (state.view.type === 'custom')
         return state.config.views.find((v) => v.id === state.view.id);
     if (state.view.type === 'account')
-        return { id: state.view.id, label: accountLabel(state.view.id) };
+        return { id: state.view.id, label: shortAccount(state.view.id) };
     return BUILTINS[0];
 }
 
@@ -179,11 +187,13 @@ function renderSidebar() {
     const al = $('#account-list');
     al.innerHTML = '';
     for (const [acct, n] of accountCounts()) {
-        al.appendChild(sideItem({
+        const item = sideItem({
             active: state.view.type === 'account' && state.view.id === acct,
-            dotColor: 'var(--teal)', label: acct, badge: n,
+            dotColor: 'var(--teal)', label: shortAccount(acct), badge: n,
             onClick: () => selectView({ type: 'account', id: acct }),
-        }));
+        });
+        item.title = acct;
+        al.appendChild(item);
     }
 }
 
@@ -228,12 +238,12 @@ function renderTable() {
             <td>${statePill(s)}</td>
             <td class="cell-start">${esc(s.startType)}</td>
             <td class="cell-pid">${s.pid ? s.pid : '—'}</td>
-            <td class="cell-acct" title="${esc(accountLabel(s.account))}">${esc(accountLabel(s.account))}</td>`;
+            <td class="cell-acct" title="${esc(accountLabel(s.account))}">${esc(shortAccount(s.account))}</td>`;
 
         const cb = tr.querySelector('input');
         cb.onclick = (ev) => { ev.stopPropagation(); toggle(s.name, i, ev.shiftKey); };
         tr.onclick = (ev) => { selectRow(s.name, i, ev); };
-        tr.oncontextmenu = (ev) => { ev.preventDefault(); toggleFavorite(s.name); };
+        tr.oncontextmenu = (ev) => { ev.preventDefault(); openContextMenu(ev, s, i); };
         tbody.appendChild(tr);
     });
 
@@ -337,10 +347,99 @@ function startAllAuto() {
     });
 }
 
+// ---------- context menu ----------
+function closeContextMenu() {
+    const m = document.getElementById('ctx-menu');
+    if (m) m.remove();
+}
+
+function openContextMenu(ev, svc, index) {
+    closeContextMenu();
+    // If the right-clicked row isn't part of the selection, select just it.
+    if (!state.selection.has(svc.name)) {
+        state.selection.clear();
+        state.selection.add(svc.name);
+        state.lastIndex = index;
+        renderTable();
+    }
+    const n = state.selection.size;
+    const fav = state.config.favorites.includes(svc.name);
+
+    const menu = el('div', 'ctx-menu');
+    menu.id = 'ctx-menu';
+    const target = n > 1 ? `${n} services` : (svc.displayName || svc.name);
+    menu.appendChild(el('div', 'ctx-title', esc(target)));
+
+    const add = (ico, label, fn, cls) => {
+        const it = el('div', 'ctx-item' + (cls ? ' ' + cls : ''));
+        it.innerHTML = `<span class="ico">${ico}</span><span>${esc(label)}</span>`;
+        it.onclick = () => { closeContextMenu(); fn(); };
+        menu.appendChild(it);
+    };
+    const sep = () => menu.appendChild(el('div', 'ctx-sep'));
+
+    add('▶', 'Start', () => runAction('Started', StartServices));
+    add('⏹', 'Stop', () => runAction('Stopped', StopServices), 'danger');
+    add('↻', 'Restart', () => runAction('Restarted', RestartServices));
+    sep();
+    add('A', 'Set Automatic', () => runAction('Set auto', (ns) => SetStartType(ns, 'auto')));
+    add('M', 'Set Manual', () => runAction('Set manual', (ns) => SetStartType(ns, 'manual')));
+    add('D', 'Set Disabled', () => runAction('Set disabled', (ns) => SetStartType(ns, 'disabled')), 'danger');
+    sep();
+    add('★', fav ? 'Remove from Favorites' : 'Add to Favorites', () => toggleFavorite(svc.name));
+    add('⧉', 'Copy service name', () => copyText(svc.name));
+
+    // position, keeping the menu on-screen
+    document.body.appendChild(menu);
+    const r = menu.getBoundingClientRect();
+    let x = ev.clientX, y = ev.clientY;
+    if (x + r.width > window.innerWidth) x = window.innerWidth - r.width - 6;
+    if (y + r.height > window.innerHeight) y = window.innerHeight - r.height - 6;
+    menu.style.left = x + 'px';
+    menu.style.top = y + 'px';
+}
+
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        toast('Copied: ' + text, 'ok');
+    } catch {
+        toast('Copy failed.', 'err');
+    }
+}
+
 // ---------- export ----------
 function exportData() {
     const rows = state.rendered;
-    const fmt = window.confirm('OK = CSV, Cancel = JSON') ? 'csv' : 'json';
+    const view = currentView();
+    const name = view ? (view.label || view.name) : 'services';
+    const root = $('#modal-root');
+    root.innerHTML = `
+      <div class="modal-backdrop">
+        <div class="modal" style="width:420px;">
+          <div class="modal-head">Export view</div>
+          <div class="modal-body">
+            <p style="color:var(--subtext1);">Export <b>${rows.length}</b> service(s) from
+            “${esc(name)}”. Choose a format:</p>
+          </div>
+          <div class="modal-foot">
+            <button class="btn ghost" id="x-cancel">Cancel</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn ghost" id="x-json">Export JSON</button>
+              <button class="btn" style="background:var(--mauve)" id="x-csv">Export CSV</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    const close = () => { root.innerHTML = ''; };
+    $('#x-cancel').onclick = close;
+    $('.modal-backdrop').onclick = (e) => { if (e.target.classList.contains('modal-backdrop')) close(); };
+    $('#x-csv').onclick = () => { close(); doExport('csv'); };
+    $('#x-json').onclick = () => { close(); doExport('json'); };
+}
+
+function doExport(fmt) {
+    const rows = state.rendered;
     let blob, fname;
     if (fmt === 'csv') {
         const head = ['Name', 'DisplayName', 'State', 'StartType', 'PID', 'Account'];
@@ -518,7 +617,15 @@ function wire() {
         };
     });
 
+    document.addEventListener('mousedown', (e) => {
+        const m = document.getElementById('ctx-menu');
+        if (m && !m.contains(e.target)) closeContextMenu();
+    });
+    document.addEventListener('scroll', closeContextMenu, true);
+    window.addEventListener('blur', closeContextMenu);
+
     document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeContextMenu();
         if (e.key === 'F5') { e.preventDefault(); refresh(); }
         if (e.key === '/' && document.activeElement !== $('#search')) { e.preventDefault(); $('#search').focus(); }
         if (e.ctrlKey && e.key.toLowerCase() === 'a' && document.activeElement !== $('#search')) {

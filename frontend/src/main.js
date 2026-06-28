@@ -570,7 +570,7 @@ function openAbout() {
               <div>
                 <div style="font-size:17px;font-weight:700;">Kaizoku Service Manager</div>
                 <div style="color:var(--subtext0);margin-top:2px;">${VERSION}</div>
-                <div style="color:var(--overlay1);font-size:12px;margin-top:6px;">MIT License &copy; TsunayoshiSawada</div>
+                <div style="color:var(--overlay1);font-size:12px;margin-top:6px;">AGPL-3.0 &copy; 2026 TsunayoshiSawada</div>
               </div>
             </div>
             <p style="color:var(--subtext1);">Manage Windows services grouped by logon account and your own custom views.</p>

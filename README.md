@@ -8,7 +8,7 @@
 
 [![Release](https://img.shields.io/github/v/release/AnimeKaizoku/Windows-Service-Manager?sort=semver)](https://github.com/AnimeKaizoku/Windows-Service-Manager/releases)
 [![Build](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml/badge.svg)](https://github.com/AnimeKaizoku/Windows-Service-Manager/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6?logo=windows)](#)
 [![Made with Go + Wails](https://img.shields.io/badge/built%20with-Go%20%2B%20Wails-00ADD8?logo=go)](https://wails.io)
 
@@ -76,4 +76,8 @@ The original PowerShell/WPF prototype lives in [`legacy/`](legacy/KaizokuService
 
 ## License
 
-[MIT](LICENSE) © TsunayoshiSawada
+Copyright © 2026 TsunayoshiSawada.
+
+Kaizoku Service Manager is licensed under the **GNU Affero General Public License v3.0** ([LICENSE](LICENSE)). You may use, study, modify, and share it freely, but any distributed or network-served derivative must also be released under the AGPL and keep attribution. Closed-source or proprietary forks are not permitted under this license.
+
+**Commercial / proprietary use:** if you want to use this software without the AGPL's copyleft obligations (e.g. in a closed-source or commercial product), a separate commercial license is available. See [LICENSING.md](LICENSING.md).
